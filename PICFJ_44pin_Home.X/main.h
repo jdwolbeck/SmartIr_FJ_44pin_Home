@@ -13,3 +13,4 @@ extern int btnEn;
 extern bool autoEn;
 extern bool showDataEn;
 extern bool tryingConn;
+extern bool dataAvailable;

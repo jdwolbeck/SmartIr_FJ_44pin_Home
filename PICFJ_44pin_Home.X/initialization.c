@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "initialization.h"
 #include "lcd.h"
+#include "app.h"
 #include "main.h"
 #include "uart.h"
 #include "system.h"
@@ -15,6 +16,7 @@ int btnEn = 0;
 bool autoEn = false;
 bool showDataEn = false;
 bool tryingConn = false;
+bool dataAvailable = false;
 
 void InitApp()
 {
@@ -152,7 +154,11 @@ void InitBluetooth(void)
     bleData.isPaired = false;
     bleData.dataReceived = false;
     bleData.isConnected = false;
-    bleData.count = 0;
+    bleData.isTryingConn = false;
+    bleData.searchCmdEn = true;
+    bleData.searchMacEn = true;
+    bleData.searchStreamEn = true;
+    bleData.sensorCount = 0;
     bleData.packetIndex = 0;
-    tryingConn = false;
+    command_byte = IDLE;
 }

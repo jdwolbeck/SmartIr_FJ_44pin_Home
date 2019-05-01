@@ -14,9 +14,9 @@ void btnPressed(int btn)
             else if(btn == 2) // K2 (Top-MID) was pressed
                 LCD_dataMenu();
             else if(btn == 3) // K3 (Bot-MID) was pressed
-                LCD_wifiMenu();
+                LCD_bleShow();
             else if(btn == 4) // K4 (Bot) was pressed
-                LCD_moreMenu();
+                LCD_infoMenu();
             break;
         case WATER_MENU:
             if(btn == 1) // K1 (Top) was pressed

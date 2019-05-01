@@ -178,7 +178,7 @@ void LCD_mainMenu(void)
     LCD_clear();
     LCD_display("1.Water   2.Data");
     LCD_secondLine();
-    LCD_display("3.WiFi    4.More");
+    LCD_display("3.View    4.Info");
     LCD_blink(0);
 }
 

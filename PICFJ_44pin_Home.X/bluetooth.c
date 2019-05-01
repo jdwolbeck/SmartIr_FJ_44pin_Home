@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "lcd.h"
+#include "app.h"
 #include "main.h"
 #include "uart.h"
 #include "system.h"
@@ -10,12 +11,15 @@
 
 BLE_DATA bleData;
 
+char MAC_FIRST[20] = "801F12B58D2F";
+char MAC_SECOND[20] = "801F12BC47B6";
+char MAC_THIRD[20] = "";
+
 void BLE_connect(int count)
 {
     //This function is used to actually connect to the RN4871
     //(Bluetooth Module). Count is used form rest of program
     //to control what commands are being sent.
-    
     if(count == 1)
     {
         uart2_print("$");
@@ -28,7 +32,6 @@ void BLE_connect(int count)
     }
     else if(count == 3)
     {
-        bleData.isPaired = true;
         uart2_print("C,0,801F12B58D2F\r"); //Connect to module
     }
 }
@@ -78,17 +81,6 @@ void BLE_findMAC(char str[])
             strcpy(bleData.foundBT[j++],temp2);
         }
     }
-    
-    k = 0;
-    while(bleData.foundBT[k][0] != '\0')
-    {
-        if(!strcmp(bleData.foundBT[k],"801F12B58D2F"))
-        {
-            //strcpy(bleData.sensors[0],bleData.foundBT[k]);
-            BLE_connect(3);
-        }
-        k++;
-    }
 }
 
 bool BLE_searchStr(char key[], char str[])
@@ -113,61 +105,6 @@ bool BLE_searchStr(char key[], char str[])
     return false;
 }
 
-void BLE_update(void)
-{
-    //This function is called with every program loop (about 250 ms).
-    //The purpose is to take away the responsibility from the interrupt
-    //to update the necessary functions when data is received from
-    //the Bluetooth (UART 2).
-    
-    bool found = BLE_searchStr("CMD>", bleData.packetBuf);
-    if(found && !bleData.isPaired)
-    {
-        BLE_connect(2);
-    }
-    
-    if(!bleData.isPaired)
-    {
-        BLE_findMAC(bleData.packetBuf);
-    }
-    
-    if(bleData.isConnected)
-    {
-        if(BLE_parseData(bleData.packetBuf))
-        {
-            memset(bleData.packetBuf,'\0',PACKET_LEN);
-            bleData.packetIndex = 0;
-        }
-    }
-    
-    found = BLE_searchStr("DISCONNECT",bleData.packetBuf);
-    if(found && !bleData.isConnected)
-    {      
-        uart_print("\r\n--DISCONNECT--\r\n");
-        uart2_print("R,1\r");
-    }
-
-    found = BLE_searchStr("STREAM_OPEN",bleData.packetBuf);
-    if(found && !bleData.isConnected)
-    {
-        memset(bleData.packetBuf,'\0',PACKET_LEN);
-        bleData.packetIndex = 0;
-        uart_print("\r\n--STREAM OPEN--\r\n");
-        bleData.isConnected = true;
-        bleData.isPaired = true;
-    }
-    
-    found = BLE_searchStr("REBOOT",bleData.packetBuf);
-    if(found)
-    {
-        InitBluetooth();
-        uart_print("\r\n--REBOOT--\r\n");
-        delay(1000);
-    }
-    
-    bleData.dataReceived = false;
-}
-
 bool BLE_parseData(char str[])
 {
     //This function is used after bluetooth connection is
@@ -185,23 +122,56 @@ bool BLE_parseData(char str[])
             count++;
     }
     
-    if(count < 3)
+    if(count != 3)
         return false;
-    
 //    j/k : are the buffer index
 //    i : represents a particular data
 //    n : is the specific data's value index
-    
     k = 0;
-    for(i = 0; i < 3; i++)
+    for(i = 3*bleData.sensorCount; i < 3 + 3*bleData.sensorCount; i++)//0; i < 3; i++)
     {
         n = 0;
         for(j = k; bleData.packetBuf[j] != ','; j++)
         {
-            bleData.data[i][n++] = bleData.packetBuf[j];
+            if(bleData.packetBuf[j] >= '0' && bleData.packetBuf[j] <= '9')
+            {
+                bleData.data[i][n++] = bleData.packetBuf[j];
+            }
             k++;
         }
         k++;
     }
     return true;
+}
+
+void BLE_disconnect()
+{
+    BLE_connect(1);
+    delay(25);
+    //while(!BLE_searchStr("CMD>", bleData.packetBuf));
+    uart2_print("K,1\r");
+    while(!BLE_searchStr("DISCONNECT", bleData.packetBuf));
+    uart2_print("---\r");
+    delay(10);
+    memset(bleData.packetBuf,'\0',PACKET_LEN);
+    bleData.packetIndex = 0;
+    uart_print("\r\n--Disconnect--\r\n");
+}
+
+void BLE_reboot(void)
+{
+    command_byte = IDLE;
+    bleData.isTryingConn = false;
+    bleData.isConnected = false;
+    bleData.searchCmdEn = true;
+    bleData.searchMacEn = true;
+    bleData.searchStreamEn = true;
+    memset(bleData.packetBuf,'\0',PACKET_LEN);
+    int i;
+    for(i = 0; i < MAX; i++)
+    {
+        memset(bleData.foundBT[i],'\0',STR_LEN);
+    }
+    bleData.sensorCount = 0;
+    bleData.packetIndex = 0;
 }

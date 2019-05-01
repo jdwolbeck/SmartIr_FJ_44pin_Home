@@ -24,6 +24,7 @@ Command:
   build/default/production/main.o \
   build/default/production/system.o \
   build/default/production/uart.o \
+  build/default/production/app.o \
   --local-stack \
   --defsym=__MPLAB_BUILD=1 \
   -Tp24FJ256GA704.gld.00 \
@@ -96,11 +97,12 @@ xc16-ld 1.36 (A)
 section                    address   length (PC units)   length (bytes) (dec)
 -------                    -------   -----------------   --------------------
 .text                        0x100               0x1ee           0x2e5  (741)
-.const                       0x2ee               0x252           0x37b  (891)
-.text                        0x540               0xe2a          0x153f  (5439)
-.dinit                      0x136a                0x16            0x21  (33)
+.const                       0x2ee               0x30c           0x492  (1170)
+.text                        0x5fa               0xf18          0x16a4  (5796)
+.dinit                      0x1512                0x3e            0x5d  (93)
+.text                       0x1550                0x54            0x7e  (126)
 
-                 Total "program" memory used (bytes):         0x1bc0  (7104) 2%
+                 Total "program" memory used (bytes):         0x1ef6  (7926) 3%
 
 
 "data" Memory  [Origin = 0x800, Length = 0x4000]
@@ -109,9 +111,11 @@ section                    address      alignment gaps    total length  (dec)
 -------                    -------      --------------    -------------------
 .nbss                        0x800                   0             0x8  (8)
 .ndata                       0x808                   0             0x2  (2)
-.bss                         0x80a                   0          0x2740  (10048)
+.nbss                        0x80a                   0             0x2  (2)
+.bss                         0x80c                   0          0x2768  (10088)
+.data                       0x2f74                   0            0x28  (40)
 
-                 Total "data" memory used (bytes):         0x274a  (10058) 61%
+                 Total "data" memory used (bytes):         0x279c  (10140) 61%
 
 
 Dynamic Memory Usage
@@ -119,9 +123,9 @@ Dynamic Memory Usage
 region                     address                      maximum length  (dec)
 ------                     -------                      ---------------------
 heap                             0                                   0  (0)
-stack                       0x2f4a                              0x18b6  (6326)
+stack                       0x2f9c                              0x1864  (6244)
 
-                 Maximum dynamic memory (bytes):         0x18b6  (6326)
+                 Maximum dynamic memory (bytes):         0x1864  (6244)
 
 
 External Symbols in Data Memory (by address):
@@ -131,15 +135,25 @@ External Symbols in Data Memory (by address):
                     0x0804                  _autoEn
                     0x0805                  _showDataEn
                     0x0806                  _tryingConn
+                    0x0807                  _dataAvailable
                     0x0808                  _delay_value
-                    0x080a                  _bleData
+                    0x080a                  _command_byte
+                    0x080c                  _bleData
+                    0x2f60                  _MAC_THIRD
+                    0x2f74                  _MAC_FIRST
+                    0x2f88                  _MAC_SECOND
 
 External Symbols in Data Memory (by name):
 
+                    0x2f74                  _MAC_FIRST
+                    0x2f88                  _MAC_SECOND
+                    0x2f60                  _MAC_THIRD
                     0x0804                  _autoEn
-                    0x080a                  _bleData
+                    0x080c                  _bleData
                     0x0802                  _btnEn
+                    0x080a                  _command_byte
                     0x0800                  _currentMenu
+                    0x0807                  _dataAvailable
                     0x0808                  _delay_value
                     0x0805                  _showDataEn
                     0x0806                  _tryingConn
@@ -148,8 +162,8 @@ External Symbols in Program Memory (by address):
 
                   0x000100                  __resetPRI
                   0x00013c                  __psv_init
-                  0x000152                  __data_init
                   0x000152                  __data_init_da
+                  0x000152                  __data_init
                   0x000204                  __U1RXInterrupt
                   0x000218                  __U2RXInterrupt
                   0x000256                  __IOCInterrupt
@@ -158,87 +172,90 @@ External Symbols in Program Memory (by address):
                   0x0002b6                  _strcmp
                   0x0002d6                  _strcpy
                   0x0002e2                  _strlen
-                  0x000540                  _LCD_begin
-                  0x0005e2                  _LCD_clear
-                  0x000604                  _LCD_home
-                  0x000626                  _LCD_moveCursor
-                  0x0006ae                  _LCD_firstLine
-                  0x0006d0                  _LCD_secondLine
-                  0x0006f2                  _LCD_blink
-                  0x00073a                  _LCD_display
-                  0x00083a                  _LCD_write
-                  0x00089a                  _LCD_read
-                  0x0008fa                  _LCD_mainMenu
-                  0x000912                  _LCD_waterMenu
-                  0x000928                  _LCD_dataMenu
-                  0x00093e                  _LCD_wifiMenu
-                  0x000954                  _LCD_moreMenu
-                  0x00096a                  _LCD_wifiConnectMenu
-                  0x000980                  _LCD_waterOn
-                  0x000998                  _LCD_waterOff
-                  0x0009b0                  _LCD_waterAuto
-                  0x0009ec                  _LCD_dataShow
-                  0x000a44                  _LCD_wifiShow
-                  0x000a88                  _LCD_wifiSelect
-                  0x000ade                  _LCD_wifiIsConnected
-                  0x000af0                  _LCD_infoMenu
-                  0x000b08                  _LCD_bleShow
-                  0x000bd8                  _BLE_connect
-                  0x000c10                  _BLE_findMAC
-                  0x000d38                  _BLE_searchStr
-                  0x000de0                  _BLE_update
-                  0x000e9e                  _BLE_parseData
-                  0x000f44                  _InitApp
-                  0x000f54                  _InitGPIO
-                  0x000f64                  _InitUART
-                  0x000fd6                  _InitLCD
-                  0x000ff2                  _InitKeypad
-                  0x001024                  _InitBluetooth
-                  0x0010b2                  _btnPressed
-                  0x0011d8                  _main
-                  0x0012d8                  _uart_print
-                  0x00130c                  _uart2_print
-                  0x001340                  _delay
+                  0x0005fa                  _LCD_begin
+                  0x00069c                  _LCD_clear
+                  0x0006be                  _LCD_home
+                  0x0006e0                  _LCD_moveCursor
+                  0x000768                  _LCD_firstLine
+                  0x00078a                  _LCD_secondLine
+                  0x0007ac                  _LCD_blink
+                  0x0007f4                  _LCD_display
+                  0x0008f4                  _LCD_write
+                  0x000954                  _LCD_read
+                  0x0009b4                  _LCD_mainMenu
+                  0x0009cc                  _LCD_waterMenu
+                  0x0009e2                  _LCD_dataMenu
+                  0x0009f8                  _LCD_wifiMenu
+                  0x000a0e                  _LCD_moreMenu
+                  0x000a24                  _LCD_wifiConnectMenu
+                  0x000a3a                  _LCD_waterOn
+                  0x000a52                  _LCD_waterOff
+                  0x000a6a                  _LCD_waterAuto
+                  0x000aa6                  _LCD_dataShow
+                  0x000afe                  _LCD_wifiShow
+                  0x000b42                  _LCD_wifiSelect
+                  0x000b98                  _LCD_wifiIsConnected
+                  0x000baa                  _LCD_infoMenu
+                  0x000bc2                  _LCD_bleShow
+                  0x000c92                  _BLE_connect
+                  0x000cc4                  _BLE_findMAC
+                  0x000db4                  _BLE_searchStr
+                  0x000e5c                  _BLE_parseData
+                  0x000f30                  _BLE_disconnect
+                  0x000f68                  _BLE_reboot
+                  0x000fbe                  _runControlUnit
+                  0x0011fe                  _InitApp
+                  0x00120e                  _InitGPIO
+                  0x00121e                  _InitUART
+                  0x001290                  _InitLCD
+                  0x0012ac                  _InitKeypad
+                  0x0012de                  _InitBluetooth
+                  0x001384                  _btnPressed
+                  0x0014aa                  _uart_print
+                  0x0014de                  _uart2_print
+                  0x001550                  _main
+                  0x00157a                  _delay
                   0x02af00                  __FSEC.sec
 
 External Symbols in Program Memory (by name):
 
-                  0x000bd8                  _BLE_connect
-                  0x000c10                  _BLE_findMAC
-                  0x000e9e                  _BLE_parseData
-                  0x000d38                  _BLE_searchStr
-                  0x000de0                  _BLE_update
-                  0x000f44                  _InitApp
-                  0x001024                  _InitBluetooth
-                  0x000f54                  _InitGPIO
-                  0x000ff2                  _InitKeypad
-                  0x000fd6                  _InitLCD
-                  0x000f64                  _InitUART
-                  0x000540                  _LCD_begin
-                  0x000b08                  _LCD_bleShow
-                  0x0006f2                  _LCD_blink
-                  0x0005e2                  _LCD_clear
-                  0x000928                  _LCD_dataMenu
-                  0x0009ec                  _LCD_dataShow
-                  0x00073a                  _LCD_display
-                  0x0006ae                  _LCD_firstLine
-                  0x000604                  _LCD_home
-                  0x000af0                  _LCD_infoMenu
-                  0x0008fa                  _LCD_mainMenu
-                  0x000954                  _LCD_moreMenu
-                  0x000626                  _LCD_moveCursor
-                  0x00089a                  _LCD_read
-                  0x0006d0                  _LCD_secondLine
-                  0x0009b0                  _LCD_waterAuto
-                  0x000912                  _LCD_waterMenu
-                  0x000998                  _LCD_waterOff
-                  0x000980                  _LCD_waterOn
-                  0x00096a                  _LCD_wifiConnectMenu
-                  0x000ade                  _LCD_wifiIsConnected
-                  0x00093e                  _LCD_wifiMenu
-                  0x000a88                  _LCD_wifiSelect
-                  0x000a44                  _LCD_wifiShow
-                  0x00083a                  _LCD_write
+                  0x000c92                  _BLE_connect
+                  0x000f30                  _BLE_disconnect
+                  0x000cc4                  _BLE_findMAC
+                  0x000e5c                  _BLE_parseData
+                  0x000f68                  _BLE_reboot
+                  0x000db4                  _BLE_searchStr
+                  0x0011fe                  _InitApp
+                  0x0012de                  _InitBluetooth
+                  0x00120e                  _InitGPIO
+                  0x0012ac                  _InitKeypad
+                  0x001290                  _InitLCD
+                  0x00121e                  _InitUART
+                  0x0005fa                  _LCD_begin
+                  0x000bc2                  _LCD_bleShow
+                  0x0007ac                  _LCD_blink
+                  0x00069c                  _LCD_clear
+                  0x0009e2                  _LCD_dataMenu
+                  0x000aa6                  _LCD_dataShow
+                  0x0007f4                  _LCD_display
+                  0x000768                  _LCD_firstLine
+                  0x0006be                  _LCD_home
+                  0x000baa                  _LCD_infoMenu
+                  0x0009b4                  _LCD_mainMenu
+                  0x000a0e                  _LCD_moreMenu
+                  0x0006e0                  _LCD_moveCursor
+                  0x000954                  _LCD_read
+                  0x00078a                  _LCD_secondLine
+                  0x000a6a                  _LCD_waterAuto
+                  0x0009cc                  _LCD_waterMenu
+                  0x000a52                  _LCD_waterOff
+                  0x000a3a                  _LCD_waterOn
+                  0x000a24                  _LCD_wifiConnectMenu
+                  0x000b98                  _LCD_wifiIsConnected
+                  0x0009f8                  _LCD_wifiMenu
+                  0x000b42                  _LCD_wifiSelect
+                  0x000afe                  _LCD_wifiShow
+                  0x0008f4                  _LCD_write
                   0x0002a2                  __DefaultInterrupt
                   0x02af00                  __FSEC.sec
                   0x000256                  __IOCInterrupt
@@ -248,15 +265,16 @@ External Symbols in Program Memory (by name):
                   0x000152                  __data_init_da
                   0x00013c                  __psv_init
                   0x000100                  __resetPRI
-                  0x0010b2                  _btnPressed
-                  0x001340                  _delay
-                  0x0011d8                  _main
+                  0x001384                  _btnPressed
+                  0x00157a                  _delay
+                  0x001550                  _main
                   0x0002a8                  _memset
+                  0x000fbe                  _runControlUnit
                   0x0002b6                  _strcmp
                   0x0002d6                  _strcpy
                   0x0002e2                  _strlen
-                  0x00130c                  _uart2_print
-                  0x0012d8                  _uart_print
+                  0x0014de                  _uart2_print
+                  0x0014aa                  _uart_print
 
 Memory Configuration
 
@@ -286,6 +304,7 @@ LOAD build/default/production/lcd.o
 LOAD build/default/production/main.o
 LOAD build/default/production/system.o
 LOAD build/default/production/uart.o
+LOAD build/default/production/app.o
                     0x0001                  __MPLAB_BUILD = 0x1
 LOAD pPIC24Fxxx
 LOAD c:/program files (x86)/microchip/xc16/v1.36/bin/bin/../../lib\libfx-elf.a
@@ -380,59 +399,65 @@ __FDEVOPT1
 .comment
  *(.comment)
 
-.debug_info       0x000000       0x4913
+.debug_info       0x000000       0x4e7b
  *(.debug_info)
- .debug_info      0x000000        0x496 build/default/production/bluetooth.o
- .debug_info      0x000496       0x23ef build/default/production/initialization.o
- .debug_info      0x002885        0x806 build/default/production/interrupt.o
- .debug_info      0x00308b        0x1ab build/default/production/keypad.o
- .debug_info      0x003236        0xb0b build/default/production/lcd.o
- .debug_info      0x003d41        0x4e9 build/default/production/main.o
- .debug_info      0x00422a        0x15e build/default/production/system.o
- .debug_info      0x004388        0x58b build/default/production/uart.o
+ .debug_info      0x000000        0x5f2 build/default/production/bluetooth.o
+ .debug_info      0x0005f2       0x24ee build/default/production/initialization.o
+ .debug_info      0x002ae0        0x86c build/default/production/interrupt.o
+ .debug_info      0x00334c        0x1ab build/default/production/keypad.o
+ .debug_info      0x0034f7        0xb71 build/default/production/lcd.o
+ .debug_info      0x004068        0x2fd build/default/production/main.o
+ .debug_info      0x004365        0x15e build/default/production/system.o
+ .debug_info      0x0044c3        0x58b build/default/production/uart.o
+ .debug_info      0x004a4e        0x42d build/default/production/app.o
  *(.gnu.linkonce.wi.*)
 
-.debug_abbrev     0x000000        0x813
+.debug_abbrev     0x000000        0x8b1
  *(.debug_abbrev)
- .debug_abbrev    0x000000         0xe5 build/default/production/bluetooth.o
- .debug_abbrev    0x0000e5        0x19f build/default/production/initialization.o
- .debug_abbrev    0x000284        0x13e build/default/production/interrupt.o
- .debug_abbrev    0x0003c2         0x67 build/default/production/keypad.o
- .debug_abbrev    0x000429        0x18d build/default/production/lcd.o
- .debug_abbrev    0x0005b6        0x108 build/default/production/main.o
- .debug_abbrev    0x0006be         0x52 build/default/production/system.o
- .debug_abbrev    0x000710        0x103 build/default/production/uart.o
+ .debug_abbrev    0x000000        0x121 build/default/production/bluetooth.o
+ .debug_abbrev    0x000121        0x1a4 build/default/production/initialization.o
+ .debug_abbrev    0x0002c5        0x13e build/default/production/interrupt.o
+ .debug_abbrev    0x000403         0x67 build/default/production/keypad.o
+ .debug_abbrev    0x00046a        0x18d build/default/production/lcd.o
+ .debug_abbrev    0x0005f7         0x8a build/default/production/main.o
+ .debug_abbrev    0x000681         0x52 build/default/production/system.o
+ .debug_abbrev    0x0006d3        0x103 build/default/production/uart.o
+ .debug_abbrev    0x0007d6         0xdb build/default/production/app.o
 
-.debug_line       0x000000        0x886
+.debug_line       0x000000        0x902
  *(.debug_line)
- .debug_line      0x000000         0xcf build/default/production/bluetooth.o
- .debug_line      0x0000cf        0x166 build/default/production/initialization.o
- .debug_line      0x000235        0x11f build/default/production/interrupt.o
- .debug_line      0x000354         0xb1 build/default/production/keypad.o
- .debug_line      0x000405        0x230 build/default/production/lcd.o
- .debug_line      0x000635        0x128 build/default/production/main.o
- .debug_line      0x00075d         0x38 build/default/production/system.o
- .debug_line      0x000795         0xf1 build/default/production/uart.o
+ .debug_line      0x000000         0xce build/default/production/bluetooth.o
+ .debug_line      0x0000ce        0x169 build/default/production/initialization.o
+ .debug_line      0x000237        0x11f build/default/production/interrupt.o
+ .debug_line      0x000356         0xb1 build/default/production/keypad.o
+ .debug_line      0x000407        0x230 build/default/production/lcd.o
+ .debug_line      0x000637         0xee build/default/production/main.o
+ .debug_line      0x000725         0x38 build/default/production/system.o
+ .debug_line      0x00075d         0xf1 build/default/production/uart.o
+ .debug_line      0x00084e         0xb4 build/default/production/app.o
 
-.debug_frame      0x000000        0x590
+.debug_frame      0x000000        0x5dc
  *(.debug_frame)
- .debug_frame     0x000000         0xa8 build/default/production/bluetooth.o
- .debug_frame     0x0000a8         0xbc build/default/production/initialization.o
- .debug_frame     0x000164         0x80 build/default/production/interrupt.o
- .debug_frame     0x0001e4         0x30 build/default/production/keypad.o
- .debug_frame     0x000214        0x2d0 build/default/production/lcd.o
- .debug_frame     0x0004e4         0x30 build/default/production/main.o
- .debug_frame     0x000514         0x30 build/default/production/system.o
- .debug_frame     0x000544         0x4c build/default/production/uart.o
+ .debug_frame     0x000000         0xc4 build/default/production/bluetooth.o
+ .debug_frame     0x0000c4         0xbc build/default/production/initialization.o
+ .debug_frame     0x000180         0x80 build/default/production/interrupt.o
+ .debug_frame     0x000200         0x30 build/default/production/keypad.o
+ .debug_frame     0x000230        0x2d0 build/default/production/lcd.o
+ .debug_frame     0x000500         0x30 build/default/production/main.o
+ .debug_frame     0x000530         0x30 build/default/production/system.o
+ .debug_frame     0x000560         0x4c build/default/production/uart.o
+ .debug_frame     0x0005ac         0x30 build/default/production/app.o
 
-.debug_str        0x000000        0x1be
+.debug_str        0x000000        0x1d9
  *(.debug_str)
- .debug_str       0x000000        0x102 build/default/production/initialization.o
- .debug_str       0x000102         0x1c build/default/production/interrupt.o
- .debug_str       0x00011e         0x17 build/default/production/keypad.o
- .debug_str       0x000135         0x32 build/default/production/lcd.o
- .debug_str       0x000167         0x1f build/default/production/main.o
- .debug_str       0x000186         0x38 build/default/production/uart.o
+ .debug_str       0x000000          0xd build/default/production/bluetooth.o
+ .debug_str       0x00000d        0x104 build/default/production/initialization.o
+ .debug_str       0x000111         0x1c build/default/production/interrupt.o
+ .debug_str       0x00012d         0x17 build/default/production/keypad.o
+ .debug_str       0x000144         0x32 build/default/production/lcd.o
+ .debug_str       0x000176          0x9 build/default/production/main.o
+ .debug_str       0x00017f         0x38 build/default/production/uart.o
+ .debug_str       0x0001b7         0x22 build/default/production/app.o
 
 .debug_loc
  *(.debug_loc)
@@ -441,29 +466,31 @@ __FDEVOPT1
  *(.debug_macinfo)
 
 .debug_pubnames
-                  0x000000        0x3b7
+                  0x000000        0x43d
  *(.debug_pubnames)
  .debug_pubnames
-                  0x000000         0x71 build/default/production/bluetooth.o
+                  0x000000         0xaf build/default/production/bluetooth.o
  .debug_pubnames
-                  0x000071         0xb8 build/default/production/initialization.o
+                  0x0000af         0xca build/default/production/initialization.o
  .debug_pubnames
-                  0x000129         0x4a build/default/production/interrupt.o
+                  0x000179         0x4a build/default/production/interrupt.o
  .debug_pubnames
-                  0x000173         0x21 build/default/production/keypad.o
+                  0x0001c3         0x21 build/default/production/keypad.o
  .debug_pubnames
-                  0x000194        0x1bb build/default/production/lcd.o
+                  0x0001e4        0x1bb build/default/production/lcd.o
  .debug_pubnames
-                  0x00034f         0x1b build/default/production/main.o
+                  0x00039f         0x1b build/default/production/main.o
  .debug_pubnames
-                  0x00036a         0x1c build/default/production/system.o
+                  0x0003ba         0x1c build/default/production/system.o
  .debug_pubnames
-                  0x000386         0x31 build/default/production/uart.o
+                  0x0003d6         0x31 build/default/production/uart.o
+ .debug_pubnames
+                  0x000407         0x36 build/default/production/app.o
 
 .debug_ranges
  *(.debug_ranges)
 
-.debug_aranges    0x000000         0xc0
+.debug_aranges    0x000000         0xd8
  *(.debug_aranges)
  .debug_aranges
                   0x000000         0x18 build/default/production/bluetooth.o
@@ -481,6 +508,8 @@ __FDEVOPT1
                   0x000090         0x18 build/default/production/system.o
  .debug_aranges
                   0x0000a8         0x18 build/default/production/uart.o
+ .debug_aranges
+                  0x0000c0         0x18 build/default/production/app.o
                     0x0000                  WREG0 = 0x0
                     0x0000                  _WREG0 = 0x0
                     0x0002                  WREG1 = 0x2
@@ -1915,54 +1944,58 @@ LOAD default_isr
 LOAD data_init
 
 .debug_pubtypes
-                  0x0000c0        0x4aa
+                  0x0000d8        0x4ef
  .debug_pubtypes
-                  0x0000c0         0x1f build/default/production/bluetooth.o
+                  0x0000d8         0x30 build/default/production/bluetooth.o
  .debug_pubtypes
-                  0x0000df        0x2b9 build/default/production/initialization.o
+                  0x000108        0x2ca build/default/production/initialization.o
  .debug_pubtypes
-                  0x000398         0x85 build/default/production/interrupt.o
+                  0x0003d2         0x85 build/default/production/interrupt.o
  .debug_pubtypes
-                  0x00041d         0x12 build/default/production/keypad.o
+                  0x000457         0x12 build/default/production/keypad.o
  .debug_pubtypes
-                  0x00042f         0x83 build/default/production/lcd.o
+                  0x000469         0x83 build/default/production/lcd.o
  .debug_pubtypes
-                  0x0004b2         0x49 build/default/production/main.o
+                  0x0004ec         0x3c build/default/production/main.o
  .debug_pubtypes
-                  0x0004fb         0x12 build/default/production/system.o
+                  0x000528         0x12 build/default/production/system.o
  .debug_pubtypes
-                  0x00050d         0x5d build/default/production/uart.o
+                  0x00053a         0x5d build/default/production/uart.o
+ .debug_pubtypes
+                  0x000597         0x30 build/default/production/app.o
 
 __c30_signature
-                  0x00056a         0x54
+                  0x0005c7         0x5a
  __c30_signature
-                  0x00056a          0x6 build/default/production/bluetooth.o
+                  0x0005c7          0x6 build/default/production/bluetooth.o
  __c30_signature
-                  0x000570          0x6 build/default/production/initialization.o
+                  0x0005cd          0x6 build/default/production/initialization.o
  __c30_signature
-                  0x000576          0x6 build/default/production/interrupt.o
+                  0x0005d3          0x6 build/default/production/interrupt.o
  __c30_signature
-                  0x00057c          0x6 build/default/production/keypad.o
+                  0x0005d9          0x6 build/default/production/keypad.o
  __c30_signature
-                  0x000582          0x6 build/default/production/lcd.o
+                  0x0005df          0x6 build/default/production/lcd.o
  __c30_signature
-                  0x000588          0x6 build/default/production/main.o
+                  0x0005e5          0x6 build/default/production/main.o
  __c30_signature
-                  0x00058e          0x6 build/default/production/system.o
+                  0x0005eb          0x6 build/default/production/system.o
  __c30_signature
-                  0x000594          0x6 build/default/production/uart.o
+                  0x0005f1          0x6 build/default/production/uart.o
  __c30_signature
-                  0x00059a          0x6 c:/program files (x86)/microchip/xc16/v1.36/bin/bin/../../lib\liblega-pic30-elf.a(crt0_extended24.o)
+                  0x0005f7          0x6 build/default/production/app.o
  __c30_signature
-                  0x0005a0          0x6 c:/program files (x86)/microchip/xc16/v1.36/bin/bin/../../lib\liblega-pic30-elf.a(data_init_24.o)
+                  0x0005fd          0x6 c:/program files (x86)/microchip/xc16/v1.36/bin/bin/../../lib\liblega-pic30-elf.a(crt0_extended24.o)
  __c30_signature
-                  0x0005a6          0x6 c:/program files (x86)/microchip/xc16/v1.36/bin/bin/../../lib\liblega-c-elf.a(memset.DA_eo)
+                  0x000603          0x6 c:/program files (x86)/microchip/xc16/v1.36/bin/bin/../../lib\liblega-pic30-elf.a(data_init_24.o)
  __c30_signature
-                  0x0005ac          0x6 c:/program files (x86)/microchip/xc16/v1.36/bin/bin/../../lib\liblega-c-elf.a(strcmp.DA_eo)
+                  0x000609          0x6 c:/program files (x86)/microchip/xc16/v1.36/bin/bin/../../lib\liblega-c-elf.a(memset.DA_eo)
  __c30_signature
-                  0x0005b2          0x6 c:/program files (x86)/microchip/xc16/v1.36/bin/bin/../../lib\liblega-c-elf.a(strcpy.DA_eo)
+                  0x00060f          0x6 c:/program files (x86)/microchip/xc16/v1.36/bin/bin/../../lib\liblega-c-elf.a(strcmp.DA_eo)
  __c30_signature
-                  0x0005b8          0x6 c:/program files (x86)/microchip/xc16/v1.36/bin/bin/../../lib\liblega-c-elf.a(strlen.DA_eo)
+                  0x000615          0x6 c:/program files (x86)/microchip/xc16/v1.36/bin/bin/../../lib\liblega-c-elf.a(strcpy.DA_eo)
+ __c30_signature
+                  0x00061b          0x6 c:/program files (x86)/microchip/xc16/v1.36/bin/bin/../../lib\liblega-c-elf.a(strlen.DA_eo)
 
 .nbss               0x0800          0x8
  .nbss              0x0800          0x8 build/default/production/initialization.o
@@ -1971,14 +2004,25 @@ __c30_signature
                     0x0804                  _autoEn
                     0x0805                  _showDataEn
                     0x0806                  _tryingConn
+                    0x0807                  _dataAvailable
 
 .ndata              0x0808          0x2
  .ndata             0x0808          0x2 build/default/production/initialization.o
                     0x0808                  _delay_value
 
-.bss                0x080a       0x2740
- .bss               0x080a       0x2740 build/default/production/bluetooth.o
-                    0x080a                  _bleData
+.nbss               0x080a          0x2
+ .nbss              0x080a          0x2 build/default/production/app.o
+                    0x080a                  _command_byte
+
+.bss                0x080c       0x2768
+ .bss               0x080c       0x2768 build/default/production/bluetooth.o
+                    0x080c                  _bleData
+                    0x2f60                  _MAC_THIRD
+
+.data               0x2f74         0x28
+ .data              0x2f74         0x28 build/default/production/bluetooth.o
+                    0x2f74                  _MAC_FIRST
+                    0x2f88                  _MAC_SECOND
 
 .ivt._U1RXInterrupt
                   0x00002a          0x2
@@ -2021,60 +2065,65 @@ __c30_signature
 .config_BSLIM     0x02af10          0x2
  .config_BSLIM    0x02af10          0x2 build/default/production/main.o
 
-.const              0x82ee        0x252 load address 0x0002ee  
+.const              0x82ee        0x30c load address 0x0002ee  
  .const             0x82ee        0x1c2 build/default/production/lcd.o
- .const             0x84b0         0x86 build/default/production/bluetooth.o
- .const             0x8536          0xa build/default/production/main.o
+ .const             0x84b0        0x108 build/default/production/app.o
+ .const             0x85b8         0x42 build/default/production/bluetooth.o
 
-.text             0x000540        0xe2a
- .text            0x000540        0x698 build/default/production/lcd.o
-                  0x000540                  _LCD_begin
-                  0x0005e2                  _LCD_clear
-                  0x000604                  _LCD_home
-                  0x000626                  _LCD_moveCursor
-                  0x0006ae                  _LCD_firstLine
-                  0x0006d0                  _LCD_secondLine
-                  0x0006f2                  _LCD_blink
-                  0x00073a                  _LCD_display
-                  0x00083a                  _LCD_write
-                  0x00089a                  _LCD_read
-                  0x0008fa                  _LCD_mainMenu
-                  0x000912                  _LCD_waterMenu
-                  0x000928                  _LCD_dataMenu
-                  0x00093e                  _LCD_wifiMenu
-                  0x000954                  _LCD_moreMenu
-                  0x00096a                  _LCD_wifiConnectMenu
-                  0x000980                  _LCD_waterOn
-                  0x000998                  _LCD_waterOff
-                  0x0009b0                  _LCD_waterAuto
-                  0x0009ec                  _LCD_dataShow
-                  0x000a44                  _LCD_wifiShow
-                  0x000a88                  _LCD_wifiSelect
-                  0x000ade                  _LCD_wifiIsConnected
-                  0x000af0                  _LCD_infoMenu
-                  0x000b08                  _LCD_bleShow
- .text            0x000bd8        0x36c build/default/production/bluetooth.o
-                  0x000bd8                  _BLE_connect
-                  0x000c10                  _BLE_findMAC
-                  0x000d38                  _BLE_searchStr
-                  0x000de0                  _BLE_update
-                  0x000e9e                  _BLE_parseData
- .text            0x000f44        0x16e build/default/production/initialization.o
-                  0x000f44                  _InitApp
-                  0x000f54                  _InitGPIO
-                  0x000f64                  _InitUART
-                  0x000fd6                  _InitLCD
-                  0x000ff2                  _InitKeypad
-                  0x001024                  _InitBluetooth
- .text            0x0010b2        0x126 build/default/production/keypad.o
-                  0x0010b2                  _btnPressed
- .text            0x0011d8        0x100 build/default/production/main.o
-                  0x0011d8                  _main
- .text            0x0012d8         0x68 build/default/production/uart.o
-                  0x0012d8                  _uart_print
-                  0x00130c                  _uart2_print
- .text            0x001340         0x2a build/default/production/system.o
-                  0x001340                  _delay
+.text             0x0005fa        0xf18
+ .text            0x0005fa        0x698 build/default/production/lcd.o
+                  0x0005fa                  _LCD_begin
+                  0x00069c                  _LCD_clear
+                  0x0006be                  _LCD_home
+                  0x0006e0                  _LCD_moveCursor
+                  0x000768                  _LCD_firstLine
+                  0x00078a                  _LCD_secondLine
+                  0x0007ac                  _LCD_blink
+                  0x0007f4                  _LCD_display
+                  0x0008f4                  _LCD_write
+                  0x000954                  _LCD_read
+                  0x0009b4                  _LCD_mainMenu
+                  0x0009cc                  _LCD_waterMenu
+                  0x0009e2                  _LCD_dataMenu
+                  0x0009f8                  _LCD_wifiMenu
+                  0x000a0e                  _LCD_moreMenu
+                  0x000a24                  _LCD_wifiConnectMenu
+                  0x000a3a                  _LCD_waterOn
+                  0x000a52                  _LCD_waterOff
+                  0x000a6a                  _LCD_waterAuto
+                  0x000aa6                  _LCD_dataShow
+                  0x000afe                  _LCD_wifiShow
+                  0x000b42                  _LCD_wifiSelect
+                  0x000b98                  _LCD_wifiIsConnected
+                  0x000baa                  _LCD_infoMenu
+                  0x000bc2                  _LCD_bleShow
+ .text            0x000c92        0x32c build/default/production/bluetooth.o
+                  0x000c92                  _BLE_connect
+                  0x000cc4                  _BLE_findMAC
+                  0x000db4                  _BLE_searchStr
+                  0x000e5c                  _BLE_parseData
+                  0x000f30                  _BLE_disconnect
+                  0x000f68                  _BLE_reboot
+ .text            0x000fbe        0x240 build/default/production/app.o
+                  0x000fbe                  _runControlUnit
+ .text            0x0011fe        0x186 build/default/production/initialization.o
+                  0x0011fe                  _InitApp
+                  0x00120e                  _InitGPIO
+                  0x00121e                  _InitUART
+                  0x001290                  _InitLCD
+                  0x0012ac                  _InitKeypad
+                  0x0012de                  _InitBluetooth
+ .text            0x001384        0x126 build/default/production/keypad.o
+                  0x001384                  _btnPressed
+ .text            0x0014aa         0x68 build/default/production/uart.o
+                  0x0014aa                  _uart_print
+                  0x0014de                  _uart2_print
 
-.dinit            0x00136a         0x16
- .dinit           0x00136a         0x16 data_init
+.dinit            0x001512         0x3e
+ .dinit           0x001512         0x3e data_init
+
+.text             0x001550         0x54
+ .text            0x001550         0x2a build/default/production/main.o
+                  0x001550                  _main
+ .text            0x00157a         0x2a build/default/production/system.o
+                  0x00157a                  _delay
