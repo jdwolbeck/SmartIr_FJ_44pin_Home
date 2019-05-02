@@ -49,33 +49,23 @@ void runControlUnit(void)
             uart_print("\r\n");
         }
         uart_print("----Packet Buffer----\r\n");
-        uart_print(bleData.packetBuf);
+//        uart_print(bleData.packetBuf);
         uart_print("\r\n");
     } 
-    if(!bleData.isTryingConn)
-    {//If the connection is not started, start connecting
-        bleData.isTryingConn = true;
-        uart_print("\r\n--CONNECT FIRST--\r\n");
-        delay(250);
-        BLE_connect(1);
-        command_byte = CONNECT_FIRST;
-    }    
-    if(bleData.dataReceived)
-    {//Functions for when data is received on Bluetooth
-        
-    }
-    
     if(BLE_searchStr("REBOOT",bleData.packetBuf))
     {//Searches for REBOOT in string and resets variables
-        uart_print("\r\n--REBOOT--\r\n");
-        delay(250);
+//        uart_print("\r\n--REBOOT--\r\n");
+//        delay(250);
+        command_byte = IDLE;
         BLE_reboot();
     }
     if(BLE_searchStr("DISCONNECT",bleData.packetBuf))
     {//Searches for DISCONNECT and reboots system
-        uart_print("\r\n--DISCONNECT--\r\n");
-        delay(250);
-        uart2_print("R,1\r");
+//        uart_print("\r\n--DISCONNECT--\r\n");
+//        delay(250);
+//        uart2_print("R,1\r");
+        command_byte = IDLE;
+        BLE_reboot();
     }
     
     ////////////////////////////////
@@ -83,7 +73,14 @@ void runControlUnit(void)
     ////////////////////////////////
     if(command_byte == IDLE)
     {//IDLE state so no connection is happening (waiting)
-        
+        if(!bleData.isTryingConn)
+        {//If the connection is not started, start connecting
+            bleData.isTryingConn = true;
+            command_byte = CONNECT_FIRST;
+//          uart_print("\r\n--CONNECT FIRST--\r\n");
+//          delay(250);
+            BLE_connect(1);
+        }
     }
     else if(command_byte == CONNECT_FIRST)
     {//Used to connect to the first node
@@ -92,12 +89,12 @@ void runControlUnit(void)
             bleData.searchCmdEn = false;
             memset(bleData.packetBuf,'\0',PACKET_LEN);
             bleData.packetIndex = 0;
-            uart_print("\r\n--Found CMD>--\r\n");
-            delay(250);
+//            uart_print("\r\n--Found CMD>--\r\n");
+//            delay(250);
             BLE_connect(2);            
         }
         if(bleData.searchMacEn)
-        {
+        {//Used to extract the MAC addresses from near devices
             BLE_findMAC(bleData.packetBuf);
         }
         if(bleData.searchMacEn && BLE_searchStr(MAC_FIRST, bleData.packetBuf))
@@ -105,18 +102,17 @@ void runControlUnit(void)
             bleData.searchMacEn = false;
             memset(bleData.packetBuf,'\0',PACKET_LEN);
             bleData.packetIndex = 0;
-            uart_print("\r\n--Found MAC--\r\n");
-            delay(250);
+//            uart_print("\r\n--Found MAC--\r\n");
+//            delay(250);
             BLE_connect(3);
         }
         if(bleData.searchStreamEn && BLE_searchStr("STREAM_OPEN",bleData.packetBuf))
-        {
-            antiStuck = 0;
+        {//If the stream is open between the two devices
             bleData.searchStreamEn = false;
             memset(bleData.packetBuf,'\0',PACKET_LEN);
             bleData.packetIndex = 0;
-            uart_print("\r\n--STREAM OPEN--\r\n");
-            delay(250);
+//            uart_print("\r\n--STREAM OPEN--\r\n");
+//            delay(250);
             bleData.isConnected = true;
             uart2_print("SEND_DATA,0");
         }
@@ -130,6 +126,7 @@ void runControlUnit(void)
 //                command_byte = IDLE;
                 bleData.sensorCount++;
                 command_byte = CONNECT_SECOND;
+                uart_print("\r\n--First Data--\r\n");
             }
         }
     }
@@ -140,29 +137,27 @@ void runControlUnit(void)
             bleData.isConnected = false;
             memset(bleData.packetBuf,'\0',PACKET_LEN);
             bleData.packetIndex = 0;
-            uart_print("\r\n--REQUEST 2ND--\r\n");
-            delay(250);
+//            uart_print("\r\n--REQUEST 2ND--\r\n");
+//            delay(250);
             uart2_print("SEND_DATA,1");
-            BLE_disconnect();  
+//            BLE_disconnect();  
         }
         if(BLE_searchStr("STREAM_OPEN", bleData.packetBuf))
         {
             memset(bleData.packetBuf,'\0',PACKET_LEN);
             bleData.packetIndex = 0;
-            uart_print("\r\n--STREAM OPEN 2--\r\n");
-            delay(250);
+//            uart_print("\r\n--STREAM OPEN 2--\r\n");
+//            delay(250);
             uart2_print("AOK");
         }
         if(BLE_parseData(bleData.packetBuf))
         {
-            memset(bleData.packetBuf,'\0',PACKET_LEN);
-            bleData.packetIndex = 0;
-            uart_print("\r\n--RECEIVED 2ND--\r\n");
-            delay(250);
+//            uart_print("\r\n--RECEIVED 2ND--\r\n");
+//            delay(250);
             bleData.dataAvailable = true;
-            bleData.sensorCount = 0;
-            BLE_disconnect();
-            command_byte = IDLE;
+            //command_byte = IDLE;
+            BLE_reboot();
+            uart_print("\r\n--Second Data--\r\n");
         }
     }
     else if(command_byte == CONNECT_THIRD)
@@ -175,11 +170,7 @@ void runControlUnit(void)
     }
     else if(command_byte == TEST)
     {
-        if(BLE_searchStr("STREAM_OPEN", bleData.packetBuf))
-        {
-            memset(bleData.packetBuf,'\0',PACKET_LEN);
-            bleData.packetIndex = 0;
-        }
+        
     }
     
     bleData.dataReceived = false;

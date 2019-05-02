@@ -34,7 +34,7 @@ void BLE_connect(int count)
     else if(count == 3)
     {
         uart2_print("C,0,");
-        uart2_print("801F12B58D2F"); //Connect to module
+        uart2_print(MAC_FIRST); //Connect to module
         uart2_print("\r");
     }
 }
@@ -149,22 +149,22 @@ bool BLE_parseData(char str[])
 
 void BLE_disconnect()
 {
+    uart_print("\r\nIN DC");
     BLE_connect(1);
-    delay(25);
-    //while(!BLE_searchStr("CMD>", bleData.packetBuf));
+    while(!BLE_searchStr("CMD>", bleData.packetBuf));
     uart2_print("K,1\r");
     while(!BLE_searchStr("DISCONNECT", bleData.packetBuf));
     uart2_print("---\r");
-    delay(10);
+    while(!BLE_searchStr("END", bleData.packetBuf));
     memset(bleData.packetBuf,'\0',PACKET_LEN);
     bleData.packetIndex = 0;
-    uart_print("\r\n--Disconnect--\r\n");
-    delay(250);
+    uart_print("\r\nOUT DC\r\n");
+//    uart_print("\r\n--Disconnect--\r\n");
+//    delay(250);
 }
 
 void BLE_reboot(void)
 {
-    command_byte = IDLE;
     bleData.isTryingConn = false;
     bleData.isConnected = false;
     bleData.searchCmdEn = true;
