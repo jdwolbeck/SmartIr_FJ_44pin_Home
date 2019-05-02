@@ -24,6 +24,7 @@ typedef struct
     bool searchStreamEn;
     bool isPaired;
     bool isConnected;
+    bool dataAvailable;
     bool dataReceived;
     bool isTryingConn;
 } BLE_DATA;

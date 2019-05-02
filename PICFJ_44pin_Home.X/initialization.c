@@ -12,6 +12,7 @@
 //Global Variables
 int delay_value = 1000; //ms
 int currentMenu = 0;
+int antiStuck = 0;   
 int btnEn = 0;
 bool autoEn = false;
 bool showDataEn = false;
@@ -153,6 +154,7 @@ void InitBluetooth(void)
     bleData.en = true;
     bleData.isPaired = false;
     bleData.dataReceived = false;
+    bleData.dataAvailable = false;
     bleData.isConnected = false;
     bleData.isTryingConn = false;
     bleData.searchCmdEn = true;

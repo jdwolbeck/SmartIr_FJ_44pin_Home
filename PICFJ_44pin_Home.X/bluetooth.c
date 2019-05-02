@@ -12,6 +12,7 @@
 BLE_DATA bleData;
 
 char MAC_FIRST[20] = "801F12B58D2F";
+//char MAC_FIRST[20] = "801F12BC47CD";
 char MAC_SECOND[20] = "801F12BC47B6";
 char MAC_THIRD[20] = "";
 
@@ -32,7 +33,9 @@ void BLE_connect(int count)
     }
     else if(count == 3)
     {
-        uart2_print("C,0,801F12B58D2F\r"); //Connect to module
+        uart2_print("C,0,");
+        uart2_print("801F12B58D2F"); //Connect to module
+        uart2_print("\r");
     }
 }
 
@@ -156,6 +159,7 @@ void BLE_disconnect()
     memset(bleData.packetBuf,'\0',PACKET_LEN);
     bleData.packetIndex = 0;
     uart_print("\r\n--Disconnect--\r\n");
+    delay(250);
 }
 
 void BLE_reboot(void)

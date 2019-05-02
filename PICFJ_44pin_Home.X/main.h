@@ -10,6 +10,7 @@
 extern int delay_value;
 extern int currentMenu;
 extern int btnEn;
+extern int antiStuck;
 extern bool autoEn;
 extern bool showDataEn;
 extern bool tryingConn;
