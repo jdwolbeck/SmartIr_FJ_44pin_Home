@@ -18,6 +18,7 @@ bool autoEn = false;
 bool showDataEn = false;
 bool tryingConn = false;
 bool dataAvailable = false;
+bool firstRun = true;
 
 void InitApp()
 {
@@ -160,7 +161,11 @@ void InitBluetooth(void)
     bleData.searchCmdEn = true;
     bleData.searchMacEn = true;
     bleData.searchStreamEn = true;
+    bleData.searchSecuredEn = true;
+    bleData.bonded = false;
     bleData.sensorCount = 0;
     bleData.packetIndex = 0;
+    bleData.dataSent = false;
+    bleData.stuck = false;
     command_byte = IDLE;
 }

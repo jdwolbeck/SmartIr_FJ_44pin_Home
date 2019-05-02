@@ -25,23 +25,8 @@ int main()
     {
         //loop every 250 ms and do logic
         delay(250);
-        HB_LED = !HB_LED;
+        //HB_LED = !HB_LED;
         runControlUnit();
-
-        //Only used when stream !open and no data is being received
-        //After about 20 seconds will reboot bluetooth in hopes to 
-        //get out of situations where program is stuck. Used for robustness
-        if(command_byte == CONNECT_FIRST) 
-        {
-            antiStuck++;
-        }
-        if(antiStuck > 4*20 && !bleData.isConnected) //About 20 seconds
-        {
-            antiStuck = 0;
-            //uart2_print("R,1\r");
-        }
-        if(antiStuck > 100000)
-            antiStuck = 0;
     }
 
     return 0;

@@ -2,6 +2,10 @@
 #include <stdbool.h>
 
 //Bluetooth properties
+extern char MAC_THIS[20];
+extern char MAC_FIRST[20];
+extern char MAC_SECOND[20];
+extern char MAC_THIRD[20];
 
 #define MAX 15
 #define NUM_OF_SENSORS 3
@@ -27,6 +31,10 @@ typedef struct
     bool dataAvailable;
     bool dataReceived;
     bool isTryingConn;
+    bool bonded;
+    bool stuck;
+    bool dataSent;
+    bool searchSecuredEn;
 } BLE_DATA;
 
 extern BLE_DATA bleData;

@@ -11,9 +11,9 @@
 
 BLE_DATA bleData;
 
-char MAC_FIRST[20] = "801F12B58D2F";
-//char MAC_FIRST[20] = "801F12BC47CD";
-char MAC_SECOND[20] = "801F12BC47B6";
+char MAC_THIS[20] = "801F12BC4606";
+char MAC_FIRST[20] = "801F12BC47CD";
+char MAC_SECOND[20] = "801F12B58D2F";
 char MAC_THIRD[20] = "";
 
 void BLE_connect(int count)
@@ -33,9 +33,14 @@ void BLE_connect(int count)
     }
     else if(count == 3)
     {
-        uart2_print("C,0,");
-        uart2_print("801F12B58D2F"); //Connect to module
-        uart2_print("\r");
+        uart2_print("C,0,801F12BC47CD\r");
+//        uart2_print("C,0,");
+//        uart2_print(MAC_FIRST); //Connect to module
+//        uart2_print("\r");
+    }
+    else if(count == 4)
+    {
+        uart2_print("C,0,801F12B58D2F\r");
     }
 }
 
@@ -150,16 +155,13 @@ bool BLE_parseData(char str[])
 void BLE_disconnect()
 {
     BLE_connect(1);
-    delay(25);
-    //while(!BLE_searchStr("CMD>", bleData.packetBuf));
+    while(!BLE_searchStr("CMD>", bleData.packetBuf));
     uart2_print("K,1\r");
     while(!BLE_searchStr("DISCONNECT", bleData.packetBuf));
     uart2_print("---\r");
-    delay(10);
+    while(!BLE_searchStr("END", bleData.packetBuf));
     memset(bleData.packetBuf,'\0',PACKET_LEN);
     bleData.packetIndex = 0;
-    uart_print("\r\n--Disconnect--\r\n");
-    delay(250);
 }
 
 void BLE_reboot(void)
@@ -170,6 +172,8 @@ void BLE_reboot(void)
     bleData.searchCmdEn = true;
     bleData.searchMacEn = true;
     bleData.searchStreamEn = true;
+    bleData.searchSecuredEn = true;
+    bleData.dataSent = false;
     memset(bleData.packetBuf,'\0',PACKET_LEN);
     int i;
     for(i = 0; i < MAX; i++)
