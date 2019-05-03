@@ -195,37 +195,38 @@ void LCD_dataMenu(void)
 {
     currentMenu = DATA_MENU;
     LCD_clear();
+    LCD_display("1.Node1  2.Node2");
+    LCD_secondLine();
+    LCD_display("3.Node3   4.Back");
+}
+
+void LCD_nodeMenu1(void)
+{
+    currentMenu = NODE_MENU_1;
+    LCD_clear();
     LCD_display("1.Show    2.Hide");
     LCD_secondLine();
     LCD_display("3.N/A     4.Back");
 }
 
-void LCD_wifiMenu(void)
+void LCD_nodeMenu2(void)
 {
-    currentMenu = WIFI_MENU;
+    currentMenu = NODE_MENU_2;
     LCD_clear();
-    LCD_display("1.Show 2.Connect");
+    LCD_display("1.Show    2.Hide");
     LCD_secondLine();
-    LCD_display("3.Conn?   4.Back");
+    LCD_display("3.N/A     4.Back");
 }
 
-void LCD_moreMenu(void)
+void LCD_nodeMenu3(void)
 {
-    currentMenu = MORE_MENU;
+    currentMenu = NODE_MENU_3;
     LCD_clear();
-    LCD_display("1.View    2.N/A");
+    LCD_display("1.Show    2.Hide");
     LCD_secondLine();
-    LCD_display("3.Info    4.Back");
+    LCD_display("3.N/A     4.Back");
 }
 
-void LCD_wifiConnectMenu(void)
-{
-    currentMenu = WIFI_CONN_MENU;
-    LCD_clear();
-    LCD_display("1.Net1    2.Net2");
-    LCD_secondLine();
-    LCD_display("3.Net3    4.Back");
-}
 //////////////////////////////////////////////////////////////
 /*                  Extra Functions                         */
 //////////////////////////////////////////////////////////////
@@ -273,7 +274,7 @@ void LCD_waterAuto(void)
     }
 }
 
-void LCD_dataShow(void)
+void LCD_dataShow1(void)
 {
     if(bleData.data[2][0] != '\0')
     {
@@ -293,78 +294,71 @@ void LCD_dataShow(void)
     else
     {
         LCD_clear();
-        LCD_display("Bluetooth");
+        LCD_display(MAC_FIRST);
         LCD_secondLine();
         LCD_display("Disconnected");
-        showDataEn = false;
+        showData1En = false;
         delay(1000);
-        LCD_dataMenu();
+        LCD_nodeMenu1();
     }
 }
 
-void LCD_wifiShow(void)
+void LCD_dataShow2(void)
 {
-    LCD_clear();
-    LCD_secondLine();
-    LCD_display("1. Network1");
-    delay(1500);
-    LCD_clear();
-    LCD_display("1. Network1");
-    LCD_secondLine();
-    LCD_display("2. Network2");
-    delay(1500);
-    LCD_clear();
-    LCD_display("2. Network2");
-    LCD_secondLine();
-    LCD_display("3. Network3");
-    delay(1500);
-    LCD_clear();
-    LCD_display("3. Network3");
-    delay(1500);
-    LCD_clear();
-    delay(1000);
-    LCD_wifiMenu();
-}
-
-void LCD_wifiSelect(int netID)
-{
-    switch(netID)
+    if(bleData.data[5][0] != '\0')
     {
-        case 1:
-            LCD_clear();
-            LCD_display("Network 1");
-            LCD_secondLine();
-            LCD_display("selected...");
-            delay(2000);
-            LCD_wifiMenu();
-            break;
-        case 2:
-            LCD_clear();
-            LCD_display("Network 2");
-            LCD_secondLine();
-            LCD_display("selected...");
-            delay(2000);
-            LCD_wifiMenu();
-            break;
-        case 3:
-            LCD_clear();
-            LCD_display("Network 3");
-            LCD_secondLine();
-            LCD_display("selected...");
-            delay(2000);
-            LCD_wifiMenu();
-            break;
-        default:
-            break;
+        char temp[2];
+        temp[0] = 0xDF; temp[1] = '\0';
+        LCD_clear();
+        LCD_display("Soil  Lux   Temp");
+        LCD_secondLine();
+        LCD_display(bleData.data[3]);
+        LCD_moveCursor(1, 6);
+        LCD_display(bleData.data[4]);
+        LCD_moveCursor(1, 11);
+        LCD_display(bleData.data[5]);
+        LCD_display(temp);
+        LCD_display("F");
+    }
+    else
+    {
+        LCD_clear();
+        LCD_display(MAC_SECOND);
+        LCD_secondLine();
+        LCD_display("Disconnected");
+        showData2En = false;
+        delay(1000);
+        LCD_nodeMenu2();
     }
 }
 
-void LCD_wifiIsConnected(void)
+void LCD_dataShow3(void)
 {
-    LCD_clear();
-    LCD_display("Coming Soon");
-    delay(1500);
-    LCD_wifiMenu();
+    if(bleData.data[2][0] != '\0')
+    {
+        char temp[2];
+        temp[0] = 0xDF; temp[1] = '\0';
+        LCD_clear();
+        LCD_display("Soil  Lux   Temp");
+        LCD_secondLine();
+        LCD_display(bleData.data[6]);
+        LCD_moveCursor(1, 6);
+        LCD_display(bleData.data[7]);
+        LCD_moveCursor(1, 11);
+        LCD_display(bleData.data[8]);
+        LCD_display(temp);
+        LCD_display("F");
+    }
+    else
+    {
+        LCD_clear();
+        LCD_display(MAC_THIRD);
+        LCD_secondLine();
+        LCD_display("Disconnected");
+        showData3En = false;
+        delay(1000);
+        LCD_nodeMenu3();
+    }
 }
 
 void LCD_infoMenu(void)
@@ -374,7 +368,7 @@ void LCD_infoMenu(void)
     LCD_secondLine();
     LCD_display("3=>Bot-Md 4=>Bot");
     delay(2500);
-    LCD_moreMenu();
+    LCD_mainMenu();
 }
 
 void LCD_bleShow(void)
@@ -420,5 +414,5 @@ void LCD_bleShow(void)
     LCD_display(bleData.foundBT[j-1]);
     delay(750);
             
-    LCD_moreMenu();
+    LCD_mainMenu();
 }

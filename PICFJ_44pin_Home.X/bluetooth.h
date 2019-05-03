@@ -10,7 +10,7 @@ extern char MAC_THIRD[20];
 #define MAX 15
 #define NUM_OF_SENSORS 3
 #define DATA_LEN 5
-#define READINGS 6
+#define READINGS 9
 #define STR_LEN 500
 #define PACKET_LEN 1024
 

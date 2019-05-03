@@ -11,10 +11,11 @@
 
 BLE_DATA bleData;
 
-char MAC_THIS[20] = "801F12BC4606";
+char MAC_THIS[20] = "801F12BC47B6";
 char MAC_FIRST[20] = "801F12BC47CD";
-char MAC_SECOND[20] = "801F12B58D2F";
-char MAC_THIRD[20] = "";
+//char MAC_SECOND[20] = "801F12B58D2F";
+char MAC_SECOND[20] = "801F12BC47B6";
+char MAC_THIRD[20] = "801F12BC4606";
 
 void BLE_connect(int count)
 {
@@ -33,14 +34,24 @@ void BLE_connect(int count)
     }
     else if(count == 3)
     {
-        uart2_print("C,0,801F12BC47CD\r");
+        uart2_print("C,0,");
+        uart2_print(MAC_FIRST);
+        uart2_print("\r");
 //        uart2_print("C,0,");
 //        uart2_print(MAC_FIRST); //Connect to module
 //        uart2_print("\r");
     }
     else if(count == 4)
     {
-        uart2_print("C,0,801F12B58D2F\r");
+        uart2_print("C,0,");
+        uart2_print(MAC_SECOND);
+        uart2_print("\r");
+    }
+    else if(count == 5)
+    {
+        uart2_print("C,0,");
+        uart2_print(MAC_THIRD);
+        uart2_print("\r");
     }
 }
 

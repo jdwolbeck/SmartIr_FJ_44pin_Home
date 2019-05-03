@@ -24,7 +24,11 @@ int main()
     while(1) 
     {
         //loop every 250 ms and do logic
-        delay(250);
+        if(bleData.dataAvailable)
+        {
+            delay(500);
+        }
+        delay(50);
         //HB_LED = !HB_LED;
         runControlUnit();
     }

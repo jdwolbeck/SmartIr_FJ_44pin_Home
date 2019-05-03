@@ -4,9 +4,9 @@
 #define MAIN_MENU 0
 #define WATER_MENU 1
 #define DATA_MENU 2
-#define WIFI_MENU 3
-#define MORE_MENU 4
-#define WIFI_CONN_MENU 5
+#define NODE_MENU_1 3
+#define NODE_MENU_2 4
+#define NODE_MENU_3 5
 
 #define RS LATCbits.LATC8
 //#define RW LATBbits.LATB5
@@ -30,16 +30,15 @@ void LCD_read(bool,bool,bool,bool,bool);
 void LCD_mainMenu(void);
 void LCD_waterMenu(void);
 void LCD_dataMenu(void);
-void LCD_wifiMenu(void);
-void LCD_moreMenu(void);
-void LCD_wifiConnectMenu(void);
+void LCD_nodeMenu1(void);
+void LCD_nodeMenu2(void);
+void LCD_nodeMenu3(void);
 
 void LCD_waterOn(void);
 void LCD_waterOff(void);
 void LCD_waterAuto(void);
-void LCD_dataShow(void);
-void LCD_wifiSelect(int);
-void LCD_wifiShow(void);
-void LCD_wifiIsConnected(void);
+void LCD_dataShow1(void);
+void LCD_dataShow2(void);
+void LCD_dataShow3(void);
 void LCD_infoMenu(void);
 void LCD_bleShow(void);

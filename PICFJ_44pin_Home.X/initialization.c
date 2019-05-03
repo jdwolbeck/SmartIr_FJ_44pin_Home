@@ -15,10 +15,11 @@ int currentMenu = 0;
 int antiStuck = 0;   
 int btnEn = 0;
 bool autoEn = false;
-bool showDataEn = false;
+bool showData1En = false;
+bool showData2En = false;
+bool showData3En = false;
 bool tryingConn = false;
 bool dataAvailable = false;
-bool firstRun = true;
 
 void InitApp()
 {
@@ -143,6 +144,10 @@ void InitBluetooth(void)
     {
         memset(bleData.foundBT[i],'\0',STR_LEN);
     }
+    strcpy(bleData.foundBT[0], MAC_THIS);
+    strcpy(bleData.foundBT[1], MAC_FIRST);
+    strcpy(bleData.foundBT[2], MAC_SECOND);
+    strcpy(bleData.foundBT[3], MAC_THIRD);
     for(i = 0; i < NUM_OF_SENSORS; i++)
     {
         memset(bleData.sensors[i],'\0',STR_LEN);

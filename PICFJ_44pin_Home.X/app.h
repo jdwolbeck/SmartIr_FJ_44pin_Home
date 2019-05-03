@@ -4,7 +4,7 @@ typedef enum{
     CONNECT_SECOND = 0x02,
     CONNECT_THIRD = 0x03,
     DISCONNECT = 0x04,
-    SET_BOND = 0x05,
+    SEND_DATA = 0x05,
     TEST = 0x0F
 } COMMAND_BYTE;
 
