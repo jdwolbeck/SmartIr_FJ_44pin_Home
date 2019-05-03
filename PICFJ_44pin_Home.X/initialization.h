@@ -4,6 +4,8 @@
 #define BAUD_RATE 9600
 
 #define HB_LED_DIR TRISBbits.TRISB9
+#define VALVE_EN_DIR TRISCbits.TRISC3
+#define VALVE_EN LATCbits.LATC3
 
 #define RS_DIR TRISCbits.TRISC8
 //#define RW_DIR TRISBbits.TRISB5 //UNUSED
@@ -22,5 +24,7 @@ void InitApp(void);
 void InitGPIO(void);
 void InitUART(void);
 void InitLCD(void);
+void InitExtInt1(void);
+void InitTimer(void);
 void InitKeypad(void);
 void InitBluetooth(void);

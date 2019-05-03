@@ -5,6 +5,7 @@
 #include "uart.h"
 #include "system.h"
 #include "keypad.h"
+#include "initialization.h"
 #include "bluetooth.h"
 
 COMMAND_BYTE command_byte;
@@ -19,20 +20,36 @@ void runControlUnit(void)
     {//Keypad(hardware) set this: handles button logic
         btnPressed(btnEn);   
     }
+    if(uart.packetReceived)
+    {
+        if(BLE_searchStr("START_WATER_", uart.buf))
+        {
+            //turn on water
+            uart_parseGUIData(uart.buf);
+            VALVE_EN = 1;
+            T1CONbits.TON = 1;
+            memset(uart.buf, '\0', PACKET_LEN_UART);
+            uart.index = 0;
+            uart.packetReceived = false;
+        }
+    }
     
     ////////////////////////////////
     /*------UART2(Bluetooth)------*/
     ////////////////////////////////
-    if(bleData.dataAvailable)
-    {
-        k = 0;
-        uart_print("\r\n--Data--\r\n");
-        while(bleData.data[k][0] != '\0')
-        {
-            uart_print(bleData.data[k++]);
-            uart_print("\r\n");
-        }
-    }
+//    if(debug)
+//    {
+//        if(bleData.dataAvailable)
+//        {
+//            k = 0;
+//            uart_print("\r\n--Data--\r\n");
+//            while(bleData.data[k][0] != '\0')
+//            {
+//                uart_print(bleData.data[k++]);
+//                uart_print("\r\n");
+//            }
+//        }
+//    }
     if(BLE_searchStr("REBOOT", bleData.packetBuf))
     {
         BLE_reboot();
@@ -52,24 +69,27 @@ void runControlUnit(void)
         antiStuck++;
         if(bleData.isConnected)
         {
-            antiStuck = 0;
             bleData.isTryingConn = true;
             bleData.searchCmdEn = false;
             bleData.searchMacEn = false;
             bleData.searchStreamEn = false;
             if(!bleData.dataSent)
             {
-                bleData.dataSent = false;
+                bleData.dataSent = true;
+                delay(100);
                 uart2_print("SEND_DATA,0");
             }
             
             if(BLE_parseData(bleData.packetBuf))
             {
                 antiStuck = 0;
-                uart_print("\r\nData 1 received");
+                if(debug)
+                {
+                    uart_print("\r\nData 1 received");
+                }
                 BLE_disconnect();
                 prepare_variables(CONNECT_SECOND);
-                command_byte = CONNECT_SECOND;
+                command_byte = SEND_DATA;
             }
         }
         if(!bleData.isTryingConn)
@@ -100,7 +120,8 @@ void runControlUnit(void)
         }
         if(BLE_searchStr("DISCONNECT", bleData.packetBuf))
         {
-            uart_print("\r\nDISCONNECT1");
+            if(debug)
+                uart_print("\r\nDISCONNECT1");
             antiStuck = 0;
             memset(bleData.packetBuf,'\0',PACKET_LEN);
             bleData.packetIndex = 0;
@@ -108,8 +129,11 @@ void runControlUnit(void)
         }
         if(bleData.stuck)
         {
-            uart_print("\r\nSTUCK1... BUF:\r\n");
-            uart_print(bleData.packetBuf);
+            if(debug)
+            {
+                uart_print("\r\nSTUCK1... BUF:\r\n");
+                uart_print(bleData.packetBuf);
+            }
             bleData.stuck = false;
             BLE_connect(1);
             delay(250);
@@ -123,7 +147,7 @@ void runControlUnit(void)
             prepare_variables(CONNECT_FIRST);
             command_byte = CONNECT_FIRST;
         }
-        if(antiStuck > (4*10)) //about 10 seconds
+        if(antiStuck > TIMEOUT) //about 10 seconds
         {
             bleData.stuck = true;
             antiStuck = 0;
@@ -134,25 +158,25 @@ void runControlUnit(void)
         antiStuck++;
         if(bleData.isConnected)
         {
-            antiStuck = 0;
             bleData.isTryingConn = true;
             bleData.searchCmdEn = false;
             bleData.searchMacEn = false;
             bleData.searchStreamEn = false;
             if(!bleData.dataSent)
             {
-                bleData.dataSent = false;
+                bleData.dataSent = true;
                 uart2_print("SEND_DATA,0");
             }
             
             if(BLE_parseData(bleData.packetBuf))
             {
                 antiStuck = 0;
-                uart_print("\r\nData 2 received");
+                if(debug)
+                    uart_print("\r\nData 2 received");
                 delay(200);
                 BLE_disconnect();
                 prepare_variables(CONNECT_THIRD);
-                command_byte = CONNECT_THIRD;
+                command_byte = SEND_DATA;
             }            
         }
         if(!bleData.isTryingConn)
@@ -183,7 +207,8 @@ void runControlUnit(void)
         }
         if(BLE_searchStr("DISCONNECT", bleData.packetBuf))
         {
-            uart_print("\r\nDISCONNECT2");
+            if(debug)
+                uart_print("\r\nDISCONNECT2");
             antiStuck = 0;
             memset(bleData.packetBuf,'\0',PACKET_LEN);
             bleData.packetIndex = 0;
@@ -191,8 +216,11 @@ void runControlUnit(void)
         }
         if(bleData.stuck)
         {
-            uart_print("\r\nSTUCK2... BUF:\r\n");
-            uart_print(bleData.packetBuf);
+            if(debug)
+            {
+                uart_print("\r\nSTUCK2... BUF:\r\n");
+                uart_print(bleData.packetBuf);
+            }
             bleData.stuck = false;
             BLE_connect(1);
             delay(250);
@@ -208,7 +236,7 @@ void runControlUnit(void)
             prepare_variables(CONNECT_FIRST);
             command_byte = CONNECT_FIRST;
         }
-        if(antiStuck > (4*10)) //about 10 seconds
+        if(antiStuck > TIMEOUT) //about 10 seconds
         {
             bleData.stuck = true;
             antiStuck = 0;
@@ -219,26 +247,26 @@ void runControlUnit(void)
         antiStuck++;
         if(bleData.isConnected)
         {
-            antiStuck = 0;
             bleData.isTryingConn = true;
             bleData.searchCmdEn = false;
             bleData.searchMacEn = false;
             bleData.searchStreamEn = false;
             if(!bleData.dataSent)
             {
-                bleData.dataSent = false;
+                bleData.dataSent = true;
                 uart2_print("SEND_DATA,0");
             }
             
             if(BLE_parseData(bleData.packetBuf))
             {
                 antiStuck = 0;
-                uart_print("\r\nData 3 received");
+                if(debug)
+                    uart_print("\r\nData 3 received");
                 delay(200);
                 bleData.dataAvailable = true;
                 BLE_disconnect();
                 prepare_variables(CONNECT_FIRST);
-                command_byte = CONNECT_FIRST;
+                command_byte = SEND_DATA;
             }            
         }
         if(!bleData.isTryingConn)
@@ -269,7 +297,8 @@ void runControlUnit(void)
         }
         if(BLE_searchStr("DISCONNECT", bleData.packetBuf))
         {
-            uart_print("\r\nDISCONNECT3");
+            if(debug)
+                uart_print("\r\nDISCONNECT3");
             antiStuck = 0;
             memset(bleData.packetBuf,'\0',PACKET_LEN);
             bleData.packetIndex = 0;
@@ -277,8 +306,11 @@ void runControlUnit(void)
         }
         if(bleData.stuck)
         {
-            uart_print("\r\nSTUCK3... BUF:\r\n");
-            uart_print(bleData.packetBuf);
+            if(debug)
+            {
+                uart_print("\r\nSTUCK3... BUF:\r\n");
+                uart_print(bleData.packetBuf);
+            }
             bleData.stuck = false;
             BLE_connect(1);
             delay(250);
@@ -294,10 +326,51 @@ void runControlUnit(void)
             prepare_variables(CONNECT_THIRD);
             command_byte = CONNECT_THIRD;
         }
-        if(antiStuck > (4*10)) //about 10 seconds
+        if(antiStuck > TIMEOUT) //about 10 seconds
         {
             bleData.stuck = true;
             antiStuck = 0;
+        }
+    }
+    else if(command_byte == SEND_DATA)
+    {
+        HB_LED = 1;
+        int i;
+        if(bleData.sensorCount == 1)//First data received
+        {
+            i = 0;
+            while(bleData.data[i][0] != '\0' && i < 3)
+            {
+                uart_print(bleData.data[i++]);
+                uart_print(",");
+                k++;
+            }
+            uart_print("1|");
+            command_byte = CONNECT_SECOND;
+        }
+        else if(bleData.sensorCount == 2)//Second data received
+        {
+            i = 3;
+            while(bleData.data[i][0] != '\0' && i < 6)
+            {
+                uart_print(bleData.data[i++]);
+                uart_print(",");
+                k++;
+            }
+            uart_print("2|");
+            command_byte = CONNECT_THIRD;
+        }
+        else if(bleData.sensorCount == 0)//Third data received
+        {
+            i = 6;
+            while(bleData.data[i][0] != '\0' && i < 9)
+            {
+                uart_print(bleData.data[i++]);
+                uart_print(",");
+                k++;
+            }
+            uart_print("3|");
+            command_byte = CONNECT_FIRST;
         }
     }
 }

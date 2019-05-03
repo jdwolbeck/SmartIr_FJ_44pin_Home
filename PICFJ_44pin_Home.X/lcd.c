@@ -6,6 +6,7 @@
 #include "uart.h"
 #include "system.h"
 #include "bluetooth.h"
+#include "initialization.h"
 
 //////////////////////////////////////////////////////////////
 /*                 Basic Operations                         */
@@ -233,22 +234,14 @@ void LCD_nodeMenu3(void)
 
 void LCD_waterOn(void)
 {
-    LCD_secondLine();
-    LCD_display("                ");
-    LCD_secondLine();
-    LCD_display("Watering Enabled");
-    delay(3000);
-    LCD_waterMenu();
+    VALVE_EN = 1;
+    dur_minutes = 99;
 }
 
 void LCD_waterOff(void)
 {
-    LCD_secondLine();
-    LCD_display("                ");
-    LCD_secondLine();
-    LCD_display("Water shut down!");
-    delay(3000);
-    LCD_waterMenu();
+    VALVE_EN = 0;
+    HB_LED = 0;
 }
 
 void LCD_waterAuto(void)
@@ -260,7 +253,7 @@ void LCD_waterAuto(void)
         LCD_display("                ");
         LCD_firstLine();
         LCD_display("Auto-water: ON");
-        delay(3000);
+        delay(1000);
         LCD_waterMenu();
     }
     else
@@ -269,7 +262,7 @@ void LCD_waterAuto(void)
         LCD_display("                ");
         LCD_firstLine();
         LCD_display("Auto-water: OFF");
-        delay(3000);
+        delay(1000);
         LCD_waterMenu();
     }
 }
@@ -378,6 +371,10 @@ void LCD_bleShow(void)
     index[0] = ind + '0';
     index[1] = '.';
     index[2] = '\0';
+    strcpy(bleData.foundBT[0], MAC_THIS);
+    strcpy(bleData.foundBT[1], MAC_FIRST);
+    strcpy(bleData.foundBT[2], MAC_SECOND);
+    strcpy(bleData.foundBT[3], MAC_THIRD);
     
     while(bleData.foundBT[j][0] != '\0')
     {

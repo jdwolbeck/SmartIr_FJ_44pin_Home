@@ -6,4 +6,5 @@ main.h  \
 uart.h  \
 system.h  \
  keypad.h  \
+initialization.h  \
 bluetooth.h 

@@ -1,3 +1,5 @@
+//#define TIMEOUT 100//5 seconds
+
 typedef enum{
     IDLE = 0x00,
     CONNECT_FIRST = 0x01,

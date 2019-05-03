@@ -24,7 +24,7 @@ int main()
     while(1) 
     {
         //loop every 250 ms and do logic
-        if(bleData.dataAvailable)
+        if(bleData.dataAvailable && debug)
         {
             delay(500);
         }

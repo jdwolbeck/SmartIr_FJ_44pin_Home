@@ -1,6 +1,7 @@
 #include <xc.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include "initialization.h"
 #include "lcd.h"
 #include "app.h"
@@ -10,6 +11,8 @@
 #include "bluetooth.h"
 
 //Global Variables
+bool debug = 0;
+int TIMEOUT = 300;
 int delay_value = 1000; //ms
 int currentMenu = 0;
 int antiStuck = 0;   
@@ -20,12 +23,20 @@ bool showData2En = false;
 bool showData3En = false;
 bool tryingConn = false;
 bool dataAvailable = false;
+int t1_ms = 0;
+int t1_seconds = 0;
+int t1_minutes = 0;
+int dur_seconds = 0;
+int dur_minutes = 0;
+int flow = 0;
 
 void InitApp()
 {
     InitGPIO();
     InitUART();
     InitLCD();
+    InitExtInt1();
+    InitTimer();
     InitKeypad();
     InitBluetooth();
 }
@@ -37,18 +48,17 @@ void InitGPIO()
     TRISB = 0xFFFF;
     //Set pins as digital input pins
     ANSB = 0;
-    
+    ANSCbits.ANSC3 = 0;
+    //Valve enable
+    VALVE_EN_DIR = 0;
     HB_LED_DIR = 0;
 }
 
 void InitUART()
 {
-    //Bluetooth reset pin
-//    TRISAbits.TRISA0 = 0;
-//    ANSAbits.ANSA0 = 0;
-//    LATAbits.LATA0 = 0;
-//    delay(10);
-//    LATAbits.LATA0 = 1;
+    memset(uart.buf, '\0', PACKET_LEN_UART);
+    uart.index = 0;
+    uart.packetReceived = false;
     
     //UART 1 (Regular/ESP)
     U1MODE = 0x0000;//(0x8008 & ~(1<<15));
@@ -108,6 +118,26 @@ void InitLCD()
     LCD_mainMenu();
 }
 
+void InitExtInt1()
+{
+    TRISBbits.TRISB4 = 1;
+    RPINR0bits.INT1R = 4;
+    
+    INTCON2bits.INT1EP = 1; // falling edge
+    IEC1bits.INT1IE = 1; // enable INT 1
+    IFS1bits.INT1IF = 0; //  clear flag
+}
+
+void InitTimer()
+{
+    TMR1 = 0x0000;
+    T1CON = 0;
+    PR1 = 0x10;
+    T1CONbits.TCKPS = 0x3;
+    IFS0bits.T1IF = 0;
+    IEC0bits.T1IE = 1;
+}
+
 void InitKeypad()
 {
     //Set keys as inputs
@@ -144,10 +174,6 @@ void InitBluetooth(void)
     {
         memset(bleData.foundBT[i],'\0',STR_LEN);
     }
-    strcpy(bleData.foundBT[0], MAC_THIS);
-    strcpy(bleData.foundBT[1], MAC_FIRST);
-    strcpy(bleData.foundBT[2], MAC_SECOND);
-    strcpy(bleData.foundBT[3], MAC_THIRD);
     for(i = 0; i < NUM_OF_SENSORS; i++)
     {
         memset(bleData.sensors[i],'\0',STR_LEN);
